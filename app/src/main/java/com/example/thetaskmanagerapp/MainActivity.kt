@@ -324,7 +324,7 @@ fun CalendarScreen(tasks: List<Task>, onBack: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimetableScreen(onBack: () -> Unit) {
-    var classCode by remember { mutableStateOf("TX00EY38-3006") }
+    var classCode by remember { mutableStateOf("ICT24K-SW") }
     var timetableData by remember { mutableStateOf<List<Reservation>>(emptyList()) }
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
