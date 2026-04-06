@@ -10,5 +10,10 @@ data class Task(
     val title: String = "",
     val description: String = "",
     val dueDate: String = "",
-    val status: String = "Pending"
+    val status: String = "Pending",
+
+    // 🔔 NEW FIELDS (notification system)
+    val hasUnreadNotification: Boolean = false,
+    val notificationCount: Int = 0,
+    val reminderEnabled: Boolean = true
 )

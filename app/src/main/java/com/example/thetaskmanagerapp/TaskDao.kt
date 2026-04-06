@@ -16,4 +16,13 @@ interface TaskDao {
 
     @Delete
     suspend fun deleteTask(task: Task)
+
+    @Query("SELECT SUM(notificationCount) FROM tasks")
+    fun getTotalNotificationCount(): Flow<Int?>
+
+    @Query("UPDATE tasks SET hasUnreadNotification = 0, notificationCount = 0 WHERE id = :taskId")
+    suspend fun clearNotification(taskId: Int)
+
+    @Query("UPDATE tasks SET hasUnreadNotification = 1, notificationCount = notificationCount + 1 WHERE id = :taskId")
+    suspend fun increaseNotificationCount(taskId: Int)
 }
