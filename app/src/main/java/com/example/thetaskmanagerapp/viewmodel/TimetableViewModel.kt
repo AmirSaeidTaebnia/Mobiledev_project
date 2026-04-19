@@ -37,7 +37,7 @@ class TimetableViewModel : ViewModel() {
     var currentWeekStart by mutableStateOf(LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)))
         private set
 
-    private val apiKey = "phFFkNRbJi48HZkVwoOX"
+    private val apiKey = ""
 
     private val api: TimetableApi = Retrofit.Builder()
         .baseUrl("https://opendata.metropolia.fi/")

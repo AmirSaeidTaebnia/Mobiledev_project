@@ -14,7 +14,7 @@ class TimetableViewModelTest {
 
     @Before
     fun setup() {
-        // We use a real ViewModel which is our TimetableViewModel, and we will inspect its state
+        // Use of a real ViewModel which is the TimetableViewModel, and we will inspect its state
         viewModel = TimetableViewModel()
     }
 
