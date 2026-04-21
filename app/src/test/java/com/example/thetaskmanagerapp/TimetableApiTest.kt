@@ -18,7 +18,7 @@ import java.util.Base64
 
 class TimetableApiTest {
 
-    private val apiKey = ""
+    private val apiKey = "phFFkNRbJi48HZkVwoOX"
     
     private val gson = GsonBuilder()
         .registerTypeAdapter(TimetableResponse::class.java, TimetableResponseDeserializer())
