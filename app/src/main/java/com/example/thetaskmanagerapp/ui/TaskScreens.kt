@@ -43,9 +43,9 @@ fun TaskListScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { 
+                title = {
                     Text(
-                        "Task Manager", 
+                        "Task Manager",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
@@ -113,7 +113,7 @@ fun NotificationIcon(notificationCount: Int, onNavigateToNotifications: () -> Un
         modifier = Modifier
             .padding(end = 8.dp)
             .size(48.dp)
-            .clickable { onNavigateToNotifications() }, 
+            .clickable { onNavigateToNotifications() },
         contentAlignment = Alignment.Center
     ) {
         Icon(imageVector = Icons.Default.Notifications, contentDescription = "Notifications")
@@ -171,8 +171,8 @@ fun TaskCard(task: Task, onEditTask: (Task) -> Unit, onDeleteTask: (Task) -> Uni
                 Spacer(modifier = Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = Icons.Default.DateRange, 
-                        contentDescription = null, 
+                        imageVector = Icons.Default.DateRange,
+                        contentDescription = null,
                         modifier = Modifier.size(14.dp),
                         tint = MaterialTheme.colorScheme.primary
                     )
@@ -184,8 +184,8 @@ fun TaskCard(task: Task, onEditTask: (Task) -> Unit, onDeleteTask: (Task) -> Uni
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Icon(
-                        imageVector = Icons.Default.Build, 
-                        contentDescription = null, 
+                        imageVector = Icons.Default.Build,
+                        contentDescription = null,
                         modifier = Modifier.size(14.dp),
                         tint = MaterialTheme.colorScheme.secondary
                     )
@@ -197,7 +197,7 @@ fun TaskCard(task: Task, onEditTask: (Task) -> Unit, onDeleteTask: (Task) -> Uni
                     )
                 }
             }
-            
+
             Surface(
                 color = when(task.status) {
                     "Done" -> Color(0xFFE8F5E9)
@@ -217,13 +217,13 @@ fun TaskCard(task: Task, onEditTask: (Task) -> Unit, onDeleteTask: (Task) -> Uni
                     }
                 )
             }
-            
+
             Spacer(modifier = Modifier.width(8.dp))
-            
+
             // Dedicated Edit Button (Pen Icon)
             IconButton(onClick = { onEditTask(task) }) {
                 Icon(
-                    imageVector = Icons.Default.Edit, 
+                    imageVector = Icons.Default.Edit,
                     contentDescription = "Edit Task",
                     tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
                 )
@@ -232,7 +232,7 @@ fun TaskCard(task: Task, onEditTask: (Task) -> Unit, onDeleteTask: (Task) -> Uni
             // Delete Button (Trash Icon)
             IconButton(onClick = { onDeleteTask(task) }) {
                 Icon(
-                    imageVector = Icons.Default.Delete, 
+                    imageVector = Icons.Default.Delete,
                     contentDescription = "Delete",
                     tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
                 )
@@ -252,9 +252,9 @@ fun NotificationsScreen(tasks: List<Task>, onBack: () -> Unit, onClearAllNotific
             TopAppBar(
                 title = { Text("Notifications") },
                 navigationIcon = {
-                    IconButton(onClick = { 
+                    IconButton(onClick = {
                         onClearAllNotifications()
-                        onBack() 
+                        onBack()
                     }) { Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back") }
                 }
             )
@@ -328,13 +328,13 @@ fun AddEditTaskScreen(task: Task?, onSave: (Task) -> Unit, onCancel: () -> Unit)
     var expanded by remember { mutableStateOf(false) }
 
     Scaffold(
-        topBar = { 
+        topBar = {
             TopAppBar(
                 title = { Text(if (task == null) "New Task" else "Edit Task", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onCancel) { Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Cancel") }
                 }
-            ) 
+            )
         }
     ) { innerPadding ->
         Column(
@@ -427,7 +427,7 @@ fun AddEditTaskScreen(task: Task?, onSave: (Task) -> Unit, onCancel: () -> Unit)
                 ) {
                     statuses.forEach { item ->
                         DropdownMenuItem(
-                            text = { 
+                            text = {
                                 Text(
                                     item,
                                     color = when(item) {
@@ -435,11 +435,11 @@ fun AddEditTaskScreen(task: Task?, onSave: (Task) -> Unit, onCancel: () -> Unit)
                                         "In Progress" -> Color(0xFF1565C0)
                                         else -> MaterialTheme.colorScheme.onSurface
                                     }
-                                ) 
+                                )
                             },
-                            onClick = { 
+                            onClick = {
                                 status = item
-                                expanded = false 
+                                expanded = false
                             }
                         )
                     }
@@ -449,16 +449,16 @@ fun AddEditTaskScreen(task: Task?, onSave: (Task) -> Unit, onCancel: () -> Unit)
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
-                onClick = { 
+                onClick = {
                     val hours = workLoadInHours.toDoubleOrNull() ?: 0.0
                     onSave(Task(
-                        id = task?.id ?: 0, 
-                        title = title, 
-                        description = description, 
-                        dueDate = dueDate, 
+                        id = task?.id ?: 0,
+                        title = title,
+                        description = description,
+                        dueDate = dueDate,
                         status = status,
                         workLoadInHours = hours
-                    )) 
+                    ))
                 },
                 modifier = Modifier
                     .fillMaxWidth()
