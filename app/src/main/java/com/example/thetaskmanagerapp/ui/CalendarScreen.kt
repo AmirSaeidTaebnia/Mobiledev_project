@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -74,7 +75,7 @@ fun CalendarScreen(tasks: List<Task>, onBack: () -> Unit) {
                                 .weight(1f)
                                 .fillMaxHeight()
                                 .border(0.5.dp, Color.LightGray.copy(0.3f))
-                                .background(if (isSelected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent)
+                                .background(if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f) else Color.Transparent)
                                 .clickable(enabled = dayIndex in 1..daysInMonth) {
                                     if (dayIndex in 1..daysInMonth) selectedDate = currentMonth.atDay(dayIndex)
                                 }
@@ -86,8 +87,25 @@ fun CalendarScreen(tasks: List<Task>, onBack: () -> Unit) {
                                     
                                     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
                                         Text(dayIndex.toString(), fontSize = 12.sp)
+                                        
+                                        // 🎨 Unified coloring for the balls
                                         if (tasksForDay.isNotEmpty()) {
-                                            Box(modifier = Modifier.size(6.dp).background(MaterialTheme.colorScheme.primary, CircleShape))
+                                            Row(horizontalArrangement = Arrangement.Center) {
+                                                tasksForDay.take(3).forEach { task ->
+                                                    val dotColor = when {
+                                                        task.status == "Done" -> Color(0xFFD1FFB3) // Green
+                                                        task.workLoadInHours < 15.0 -> Color(0xFFFFFED6) // Yellow
+                                                        task.workLoadInHours < 30.0 -> Color(0xFFF7E2B6) // Orange
+                                                        else -> Color(0xFFFFD6D6) // Red
+                                                    }
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .padding(horizontal = 1.dp)
+                                                            .size(6.dp)
+                                                            .background(dotColor, CircleShape)
+                                                    )
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -107,22 +125,11 @@ fun CalendarScreen(tasks: List<Task>, onBack: () -> Unit) {
             
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(tasksForSelectedDay) { task ->
-                    Card(
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-                    ) {
-                        Column(modifier = Modifier.padding(12.dp)) {
-                            Text(task.title, fontWeight = FontWeight.Bold)
-                            Text("Description: ${task.description}", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
-                            Text("Workload: ${task.workLoadInHours}h", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
-                            Text("Due Date: ${task.dueDate}", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
-                            Text("Status: ${task.status}", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
-                        }
-                    }
+                    TaskCard(task, onEditTask = {}, onDeleteTask = {}) // Reuse TaskCard for consistency
                 }
                 if (tasksForSelectedDay.isEmpty()) {
                     item {
-                        Text("No tasks for this day", modifier = Modifier.padding(top = 8.dp), color = Color.Black, fontSize = 14.sp)
+                        Text("No tasks for this day", modifier = Modifier.padding(top = 16.dp), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
                     }
                 }
             }

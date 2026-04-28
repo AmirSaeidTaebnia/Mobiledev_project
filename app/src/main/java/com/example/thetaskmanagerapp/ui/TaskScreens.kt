@@ -1,5 +1,6 @@
 package com.example.thetaskmanagerapp.ui
 
+import android.app.TimePickerDialog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -19,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
@@ -26,6 +28,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.thetaskmanagerapp.data.Task
 import java.time.LocalDate
+import java.time.LocalTime
+import java.util.Calendar
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,6 +45,11 @@ fun TaskListScreen(
     onNavigateToTimetable: () -> Unit,
     onNavigateToNotifications: () -> Unit
 ) {
+    // 🔽 Sort tasks by date then time
+    val sortedTasks = remember(tasks) {
+        tasks.sortedWith(compareBy({ it.dueDate }, { it.dueTime }))
+    }
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -99,7 +109,7 @@ fun TaskListScreen(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(16.dp)
             ) {
-                items(tasks) { task ->
+                items(sortedTasks) { task ->
                     TaskCard(task, onEditTask, onDeleteTask)
                 }
             }
@@ -145,13 +155,24 @@ fun TaskHeader() {
 
 @Composable
 fun TaskCard(task: Task, onEditTask: (Task) -> Unit, onDeleteTask: (Task) -> Unit) {
+    // 🎨 Logic-based workload coloring (Slightly more saturated for better distinction)
+    val cardBackgroundColor = if (task.status == "Done") {
+        Color(0xFFD1FFB3) // Green 100
+    } else {
+        when {
+            task.workLoadInHours < 15.0 -> Color(0xFFFFFED6) // Yellow 100
+            task.workLoadInHours < 30.0 -> Color(0xFFF7E2B6) // Orange 100
+            else -> Color(0xFFFFD6D6) // Red 100
+        }
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = cardBackgroundColor
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
@@ -178,7 +199,7 @@ fun TaskCard(task: Task, onEditTask: (Task) -> Unit, onDeleteTask: (Task) -> Uni
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = task.dueDate,
+                        text = "${task.dueDate} ${task.dueTime}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -200,9 +221,9 @@ fun TaskCard(task: Task, onEditTask: (Task) -> Unit, onDeleteTask: (Task) -> Uni
 
             Surface(
                 color = when(task.status) {
-                    "Done" -> Color(0xFFE8F5E9)
-                    "In Progress" -> Color(0xFFE3F2FD)
-                    else -> MaterialTheme.colorScheme.surfaceVariant
+                    "Done" -> Color(0xFF2E7D32).copy(alpha = 0.2f)
+                    "In Progress" -> Color(0xFF1565C0).copy(alpha = 0.2f)
+                    else -> Color.Black.copy(alpha = 0.1f)
                 },
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -211,9 +232,9 @@ fun TaskCard(task: Task, onEditTask: (Task) -> Unit, onDeleteTask: (Task) -> Uni
                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
                     style = MaterialTheme.typography.labelSmall,
                     color = when(task.status) {
-                        "Done" -> Color(0xFF2E7D32)
-                        "In Progress" -> Color(0xFF1565C0)
-                        else -> MaterialTheme.colorScheme.onSurfaceVariant
+                        "Done" -> Color(0xFF1B5E20)
+                        "In Progress" -> Color(0xFF0D47A1)
+                        else -> Color.DarkGray
                     }
                 )
             }
@@ -225,7 +246,7 @@ fun TaskCard(task: Task, onEditTask: (Task) -> Unit, onDeleteTask: (Task) -> Uni
                 Icon(
                     imageVector = Icons.Default.Edit,
                     contentDescription = "Edit Task",
-                    tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+                    tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
                 )
             }
 
@@ -234,7 +255,7 @@ fun TaskCard(task: Task, onEditTask: (Task) -> Unit, onDeleteTask: (Task) -> Uni
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = "Delete",
-                    tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
+                    tint = MaterialTheme.colorScheme.error.copy(alpha = 0.8f)
                 )
             }
         }
@@ -292,6 +313,11 @@ fun NotificationsScreen(tasks: List<Task>, onBack: () -> Unit, onClearAllNotific
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DoneTasksScreen(tasks: List<Task>, onBack: () -> Unit, onEditTask: (Task) -> Unit, onDeleteTask: (Task) -> Unit) {
+    // 🔽 Sort tasks by date then time
+    val sortedTasks = remember(tasks) {
+        tasks.sortedWith(compareBy({ it.dueDate }, { it.dueTime }))
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -307,7 +333,7 @@ fun DoneTasksScreen(tasks: List<Task>, onBack: () -> Unit, onEditTask: (Task) ->
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(16.dp)
             ) {
-                items(tasks) { task ->
+                items(sortedTasks) { task ->
                     TaskCard(task, onEditTask, onDeleteTask)
                 }
             }
@@ -321,11 +347,21 @@ fun AddEditTaskScreen(task: Task?, onSave: (Task) -> Unit, onCancel: () -> Unit)
     var title by remember { mutableStateOf(task?.title ?: "") }
     var description by remember { mutableStateOf(task?.description ?: "") }
     var dueDate by remember { mutableStateOf(task?.dueDate ?: LocalDate.now().toString()) }
+    var dueTime by remember { mutableStateOf(task?.dueTime ?: "12:00") }
     var status by remember { mutableStateOf(task?.status ?: "Pending") }
     var workLoadInHours by remember { mutableStateOf(task?.workLoadInHours?.toString() ?: "0.0") }
 
+    val context = LocalContext.current
     val statuses = listOf("Pending", "In Progress", "Done")
     var expanded by remember { mutableStateOf(false) }
+
+    val timePickerDialog = TimePickerDialog(
+        context,
+        { _, hourOfDay, minute ->
+            dueTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute)
+        },
+        12, 0, true
+    )
 
     Scaffold(
         topBar = {
@@ -381,17 +417,34 @@ fun AddEditTaskScreen(task: Task?, onSave: (Task) -> Unit, onCancel: () -> Unit)
                 )
 
                 OutlinedTextField(
-                    value = workLoadInHours,
-                    onValueChange = { workLoadInHours = it },
-                    label = { Text("Hours") },
-                    placeholder = { Text("0.0") },
-                    modifier = Modifier.weight(0.6f),
+                    value = dueTime,
+                    onValueChange = { dueTime = it },
+                    label = { Text("Due Time") },
+                    modifier = Modifier.weight(1f).clickable { timePickerDialog.show() },
+                    enabled = false, // Disable typing, force click
                     shape = RoundedCornerShape(20.dp),
-                    leadingIcon = { Icon(imageVector = Icons.Default.Build, contentDescription = null) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    singleLine = true
+                    leadingIcon = { Icon(imageVector = Icons.Default.Place, contentDescription = null) },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                        disabledBorderColor = MaterialTheme.colorScheme.outline,
+                        disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 )
             }
+
+            OutlinedTextField(
+                value = workLoadInHours,
+                onValueChange = { workLoadInHours = it },
+                label = { Text("Hours") },
+                placeholder = { Text("0.0") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(20.dp),
+                leadingIcon = { Icon(imageVector = Icons.Default.Build, contentDescription = null) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                singleLine = true
+            )
 
             ExposedDropdownMenuBox(
                 expanded = expanded,
@@ -409,13 +462,13 @@ fun AddEditTaskScreen(task: Task?, onSave: (Task) -> Unit, onCancel: () -> Unit)
                     shape = RoundedCornerShape(20.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedContainerColor = when(status) {
-                            "Done" -> Color(0xFFE8F5E9)
-                            "In Progress" -> Color(0xFFE3F2FD)
+                            "Done" -> Color(0xFFC8E6C9)
+                            "In Progress" -> Color(0xFFBBDEFB)
                             else -> Color.Transparent
                         },
                         unfocusedContainerColor = when(status) {
-                            "Done" -> Color(0xFFF1F8E9)
-                            "In Progress" -> Color(0xFFE3F2FD)
+                            "Done" -> Color(0xFFC8E6C9)
+                            "In Progress" -> Color(0xFFBBDEFB)
                             else -> Color.Transparent
                         }
                     )
@@ -456,6 +509,7 @@ fun AddEditTaskScreen(task: Task?, onSave: (Task) -> Unit, onCancel: () -> Unit)
                         title = title,
                         description = description,
                         dueDate = dueDate,
+                        dueTime = dueTime,
                         status = status,
                         workLoadInHours = hours
                     ))
