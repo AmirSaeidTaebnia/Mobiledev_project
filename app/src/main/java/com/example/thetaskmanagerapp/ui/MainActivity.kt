@@ -166,8 +166,7 @@ fun TaskApp(
         is Screen.Notifications -> {
             NotificationsScreen(
                 tasks = tasks,
-                onBack = { currentScreen = Screen.TaskList },
-                onClearAllNotifications = { taskViewModel.clearAllNotifications() }
+                onBack = { currentScreen = Screen.TaskList }
             )
         }
         is Screen.DoneTasks -> {
@@ -179,7 +178,12 @@ fun TaskApp(
             )
         }
         is Screen.Calendar -> {
-            CalendarScreen(tasks = tasks, onBack = { currentScreen = Screen.TaskList })
+            CalendarScreen(
+                tasks = tasks, 
+                onBack = { currentScreen = Screen.TaskList },
+                onEditTask = { task -> currentScreen = Screen.AddEditTask(task) },
+                onDeleteTask = { task -> taskViewModel.deleteTask(task) }
+            )
         }
         is Screen.Timetable -> {
             TimetableScreen(onBack = { currentScreen = Screen.TaskList }, viewModel = timetableViewModel)

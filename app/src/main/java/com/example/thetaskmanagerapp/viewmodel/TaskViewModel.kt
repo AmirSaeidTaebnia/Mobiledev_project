@@ -20,13 +20,6 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
     private val dao = AppDatabase.getDatabase(application).taskDao()
 
     val tasks: Flow<List<Task>> = dao.getAllTasks()
-    val doneTasks: Flow<List<Task>> = dao.getDoneTasks()
-    val totalNotifications: Flow<Int?> = dao.getTotalNotificationCount()
-
-    // Logic to count pending tasks for a specific date
-    fun countPendingTasks(tasks: List<Task>, date: String): Int {
-        return tasks.count { it.dueDate == date && it.status != "Done" }
-    }
 
     fun insertTask(task: Task) {
         viewModelScope.launch {
@@ -53,6 +46,7 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    // START NOTIFICATION LOGIC / INICIO LÓGICA DE AVISOS
     private fun scheduleNotification(task: Task) {
         val alarmManager = getApplication<Application>().getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(getApplication(), NotificationReceiver::class.java).apply {
@@ -73,25 +67,35 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
             val dueMillis = dueDate.atTime(23, 59).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
             
             if (System.currentTimeMillis() < dueMillis) {
-                // Frequency based on priority/effort
-                val interval = when (task.priority) {
-                    "High" -> AlarmManager.INTERVAL_HOUR * 2
-                    "Medium" -> AlarmManager.INTERVAL_HOUR * 6
-                    else -> AlarmManager.INTERVAL_HOUR * 12
-                }
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    alarmManager.setInexactRepeating(
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    // Exact alarm permission / Permiso alarma exacta
+                    if (alarmManager.canScheduleExactAlarms()) {
+                        // Precision guaranteed / Precisión garantizada
+                        alarmManager.setExactAndAllowWhileIdle(
+                            AlarmManager.RTC_WAKEUP,
+                            System.currentTimeMillis() + 10000,
+                            pendingIntent
+                        )
+                    } else {
+                        // Battery optimized delay / Retraso por ahorro de batería
+                        alarmManager.setAndAllowWhileIdle(
+                            AlarmManager.RTC_WAKEUP,
+                            System.currentTimeMillis() + 10000,
+                            pendingIntent
+                        )
+                    }
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    // Android 6-11: Exact in Doze / Exacto en Doze
+                    alarmManager.setExactAndAllowWhileIdle(
                         AlarmManager.RTC_WAKEUP,
-                        System.currentTimeMillis() + AlarmManager.INTERVAL_FIFTEEN_MINUTES,
-                        interval,
+                        System.currentTimeMillis() + 10000,
                         pendingIntent
                     )
                 } else {
-                    alarmManager.setRepeating(
+                    // Legacy: Simple exact / Legado: Exacto simple
+                    alarmManager.setExact(
                         AlarmManager.RTC_WAKEUP,
-                        System.currentTimeMillis() + AlarmManager.INTERVAL_FIFTEEN_MINUTES,
-                        interval,
+                        System.currentTimeMillis() + 10000,
                         pendingIntent
                     )
                 }
@@ -115,21 +119,5 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun clearNotification(taskId: Int) {
-        viewModelScope.launch {
-            dao.clearNotification(taskId)
-        }
-    }
-
-    fun clearAllNotifications() {
-        viewModelScope.launch {
-            dao.clearAllNotifications()
-        }
-    }
-
-    fun simulateNotification(taskId: Int) {
-        viewModelScope.launch {
-            dao.increaseNotificationCount(taskId)
-        }
-    }
+    // END NOTIFICATION LOGIC / FIN LÓGICA DE AVISOS
 }

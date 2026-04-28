@@ -26,7 +26,7 @@ sealed class Screen {
     object DoneTasks : Screen()
     object Calendar : Screen()
     object Timetable : Screen()
-    object Notifications : Screen() // 🔔 Nueva pantalla de notificaciones
+    object Notifications : Screen() // 🔔 New notifications screen
 }
 
 // API Models

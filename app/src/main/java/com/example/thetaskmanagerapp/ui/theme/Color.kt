@@ -2,10 +2,18 @@ package com.example.thetaskmanagerapp.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+// Light Theme Colors
+val SlatePrimary = Color(0xFF455A64) // Blue Grey 700
+val SlateSecondary = Color(0xFF607D8B) // Blue Grey 500
+val SlateTertiary = Color(0xFF90A4AE) // Blue Grey 300
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+// Dark Theme Colors
+val SlatePrimaryDark = Color(0xFFB0BEC5) // Blue Grey 200
+val SlateSecondaryDark = Color(0xFF90A4AE) // Blue Grey 300
+val SlateTertiaryDark = Color(0xFFCFD8DC) // Blue Grey 100
+
+// Accent Colors
+val SoftGreen = Color(0xFF81C784)
+val SoftBlue = Color(0xFF64B5F6)
+val DeepSlate = Color(0xFF263238)
+val MutedSlate = Color(0xFF78909C)
