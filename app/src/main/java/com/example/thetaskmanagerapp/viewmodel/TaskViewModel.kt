@@ -119,5 +119,4 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    // END NOTIFICATION LOGIC / FIN LÓGICA DE AVISOS
 }
