@@ -15,8 +15,24 @@ class TaskListScreenTest {
     @Test
     fun taskListScreen_displaysHeaderAndTasks() {
         val testTasks = listOf(
-            Task(1, "Buy Groceries", "Milk, Eggs, Bread", "2024-05-01", "Pending", 1.0),
-            Task(2, "Gym", "Leg day", "2024-05-01", "Done", 1.5)
+            Task(
+                id = 1,
+                title = "Buy Groceries",
+                description = "Milk, Eggs, Bread",
+                dueDate = "2024-05-01",
+                dueTime = "10:00",
+                status = "Pending",
+                workLoadInHours = 1.0
+            ),
+            Task(
+                id = 2,
+                title = "Gym",
+                description = "Leg day",
+                dueDate = "2024-05-01",
+                dueTime = "18:00",
+                status = "Done",
+                workLoadInHours = 1.5
+            )
         )
 
         composeTestRule.setContent {

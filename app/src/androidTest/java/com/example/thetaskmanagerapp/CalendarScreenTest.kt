@@ -22,14 +22,29 @@ class CalendarScreenTest {
         }
 
         composeTestRule.onRoot().assertExists()
-        // Check for some header or specific element if it exists
     }
 
     @Test
     fun calendarScreen_displaysTasks() {
         val testTasks = listOf(
-            Task(1, "Test Task 1", "Desc 1", "2024-05-01", "Pending", 1.0),
-            Task(2, "Test Task 2", "Desc 2", "2024-05-01", "Done", 2.0)
+            Task(
+                id = 1,
+                title = "Test Task 1",
+                description = "Desc 1",
+                dueDate = "2024-05-01",
+                dueTime = "10:00",
+                status = "Pending",
+                workLoadInHours = 1.0
+            ),
+            Task(
+                id = 2,
+                title = "Test Task 2",
+                description = "Desc 2",
+                dueDate = "2024-05-01",
+                dueTime = "14:00",
+                status = "Done",
+                workLoadInHours = 2.0
+            )
         )
 
         composeTestRule.setContent {
@@ -39,7 +54,6 @@ class CalendarScreenTest {
             )
         }
 
-        // Verify that the screen is displayed
         composeTestRule.onRoot().assertExists()
     }
 
@@ -53,7 +67,6 @@ class CalendarScreenTest {
             )
         }
 
-        // Assuming there's a back button with content description "Back"
         composeTestRule.onNodeWithContentDescription("Back").performClick()
         assert(backClicked)
     }

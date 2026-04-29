@@ -27,7 +27,15 @@ class TaskViewModelTest {
 
     @Test
     fun insertAndGetTask() = runBlocking {
-        val task = Task(0, "Test Task", "Description", "2024-05-01", "Pending", 1.0)
+        val task = Task(
+            id = 0,
+            title = "Test Task",
+            description = "Description",
+            dueDate = "2024-05-01",
+            dueTime = "12:00",
+            status = "Pending",
+            workLoadInHours = 1.0
+        )
         viewModel.insertTask(task)
         
         val tasks = viewModel.tasks.first()
